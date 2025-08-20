@@ -1,7 +1,7 @@
 import React from 'react'
 import Image from 'next/image';
 import Link from 'next/link';
-import NavItems from './ui/NavItems';
+import NavItems from './NavItems';
 
 const Navbar = () => {
   return (
@@ -19,6 +19,7 @@ const Navbar = () => {
 
       <div className="flex items-center gap-8">
         <NavItems />
+        <p>Sign In</p>
       </div>
     </nav>
   );
