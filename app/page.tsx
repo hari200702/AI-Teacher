@@ -5,11 +5,15 @@ import { Button } from '@/components/ui/button'
 import {recentSessions} from "@/constants";
 import {getSubjectColor} from "@/lib/utils";
 import {getAllCompanions, getRecentSessions} from "@/lib/actions/companion.actions";
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 
 const Page = async () => {
+  
+  
     const companions = await getAllCompanions({ limit: 3 });
     const recentSessionsCompanions = await getRecentSessions(10);
-
+    
   return (
     <main>
       <h1>Popular Companions</h1>

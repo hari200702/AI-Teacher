@@ -1,9 +1,10 @@
 "use client";
-import { removeBookmark } from "@/lib/actions/companion.actions";
+import { isCompanionBookmarked, removeBookmark } from "@/lib/actions/companion.actions";
 import { addBookmark } from "@/lib/actions/companion.actions";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface CompanionCardProps {
   id: string;
@@ -12,7 +13,6 @@ interface CompanionCardProps {
   subject: string;
   duration: number;
   color: string;
-  bookmarked: boolean;
 }
 
 const CompanionCard = ({
@@ -22,16 +22,36 @@ const CompanionCard = ({
   subject,
   duration,
   color,
-  bookmarked,
 }: CompanionCardProps) => {
+  const [bookmarked, setBookmarked] = useState(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    const fetchBookmarkStatus = async () => {
+      try {
+        console.log("INvoked")
+        console.log(id)
+        const isBookmarked = await isCompanionBookmarked(id);
+        console.log(isBookmarked)
+        setBookmarked(isBookmarked);
+      } catch (error) {
+        console.error("Error fetching bookmark status:", error);
+      }
+    };
+    fetchBookmarkStatus();
+
+  }, [id]);
+
   const handleBookmark = async () => {
-    if (bookmarked) {
-      console.log("if Trigered")
-      await removeBookmark(id, pathname);
-    } else {
-      console.log("else Trigered")
-      await addBookmark(id, pathname);
+    try {
+      if (bookmarked) {
+        await removeBookmark(id, pathname);
+      } else {
+        await addBookmark(id, pathname);
+      }
+      setBookmarked(!bookmarked); // Optimistic UI update
+    } catch (error) {
+      console.error("Error handling bookmark:", error);
     }
   };
   console.log("Bookmark ------> ", bookmarked)
