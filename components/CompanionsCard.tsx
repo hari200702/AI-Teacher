@@ -29,7 +29,6 @@ const CompanionCard = ({
   useEffect(() => {
     const fetchBookmarkStatus = async () => {
       try {
-        console.log("INvoked")
         console.log(id)
         const isBookmarked = await isCompanionBookmarked(id);
         console.log(isBookmarked)
@@ -54,7 +53,6 @@ const CompanionCard = ({
       console.error("Error handling bookmark:", error);
     }
   };
-  console.log("Bookmark ------> ", bookmarked)
   return (
     <article className="companion-card" style={{ backgroundColor: color }}>
       <div className="flex justify-between items-center">

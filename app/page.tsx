@@ -19,7 +19,7 @@ const Page = async () => {
       <h1>Popular Companions</h1>
 
         <section className="home-section">
-            {companions.map((companion) => (
+            {companions && companions.map((companion) => (
                 <CompanionsCard
                     key={companion.id}
                     {...companion}

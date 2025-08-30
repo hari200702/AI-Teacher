@@ -19,27 +19,35 @@ export const createCompanion = async (formData: CreateCompanion) => {
 }
 
 export const getAllCompanions = async ({ limit = 10, page = 1, subject, topic }: GetAllCompanions) => {
-    const supabase = createSupabaseClient();
+  const supabase = createSupabaseClient();
+  const obj = await auth();  // auth info
+  const userId = obj?.userId; // extract user id
 
-    let query = supabase.from('companions').select();
 
-    if(subject && topic) {
-        query = query.ilike('subject', `%${subject}%`)
-            .or(`topic.ilike.%${topic}%,name.ilike.%${topic}%`)
-    } else if(subject) {
-        query = query.ilike('subject', `%${subject}%`)
-    } else if(topic) {
-        query = query.or(`topic.ilike.%${topic}%,name.ilike.%${topic}%`)
-    }
+  let query = supabase
+    .from("companions")
+    .select()
+    .eq("author", userId); // ✅ restrict to current user
 
-    query = query.range((page - 1) * limit, page * limit - 1);
+  if (subject && topic) {
+    query = query
+      .ilike("subject", `%${subject}%`)
+      .or(`topic.ilike.%${topic}%,name.ilike.%${topic}%`);
+  } else if (subject) {
+    query = query.ilike("subject", `%${subject}%`);
+  } else if (topic) {
+    query = query.or(`topic.ilike.%${topic}%,name.ilike.%${topic}%`);
+  }
 
-    const { data: companions, error } = await query;
+  query = query.range((page - 1) * limit, page * limit - 1);
 
-    if(error) throw new Error(error.message);
+  const { data: companions, error } = await query;
 
-    return companions;
-}
+  if (error) throw new Error(error.message);
+
+  return companions;
+};
+
 
 export const getCompanion = async (id: string) => {
     const supabase = createSupabaseClient();
@@ -69,12 +77,14 @@ export const addToSessionHistory = async (companionId: string) => {
 }
 
 export const getRecentSessions = async (limit = 10) => {
+    const { userId } = await auth();
     const supabase = createSupabaseClient();
     const { data, error } = await supabase
         .from('session_history')
         .select(`companions:companion_id (*)`)
         .order('created_at', { ascending: false })
         .limit(limit)
+        .eq("user_id", userId);
 
     if(error) throw new Error(error.message);
 
@@ -110,6 +120,7 @@ export const getUserCompanions = async (userId: string) => {
 export const newCompanionPermissions = async () => {
     const { userId, has } = await auth();
     const supabase = createSupabaseClient();
+
 
     let limit = 0;
 
@@ -187,7 +198,7 @@ export const getBookmarkedCompanions = async (userId: string) => {
 
 
 export const isCompanionBookmarked = async (companionId: string) => {
-const { userId } = await auth(); 
+const { userId } = await auth();
 
 if (!userId) {
 throw new Error("User is not authenticated");
