@@ -32,6 +32,7 @@ const CompanionComponent = ({ companionId, subject, topic, name, userName, userI
                 lottieRef.current?.stop()
             }
         }
+        console.log(lottieRef)
     }, [isSpeaking, lottieRef])
 
     useEffect(() => {
@@ -69,12 +70,15 @@ const CompanionComponent = ({ companionId, subject, topic, name, userName, userI
             vapi.off('speech-start', onSpeechStart);
             vapi.off('speech-end', onSpeechEnd);
         }
+
+        
     }, []);
 
     const toggleMicrophone = () => {
         const isMuted = vapi.isMuted();
         vapi.setMuted(!isMuted);
         setIsMuted(!isMuted)
+        console.log(messages)
     }
 
     const handleCall = async () => {
